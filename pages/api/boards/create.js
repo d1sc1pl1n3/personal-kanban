@@ -1,0 +1,24 @@
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    const { name } = req.body;
+    console.log('name', name);
+    try {
+      const board = await prisma.board.create({
+        data: { name },
+      });
+      console.log('board', board);
+      res.status(201).json(board);
+    } catch (error) {
+        console.log('error', error);
+      console.error(error);
+      res.status(500).json({ message: "Failed to create board" });
+    }
+  } else {
+    res.setHeader("Allow", ["POST"]);
+    res.status(405).json({ message: `Method ${req.method} not allowed` });
+  }
+}
