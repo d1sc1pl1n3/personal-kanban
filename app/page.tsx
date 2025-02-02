@@ -29,7 +29,7 @@ export default function Home() {
             width={20}
             height={20}
           />
-          <Link href="/boards">Go to Boards</Link>
+          <Link href="/boards">Go to Boards overview</Link>
         </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
