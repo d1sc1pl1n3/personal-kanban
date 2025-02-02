@@ -41,6 +41,10 @@ const BoardsPage: React.FC = () => {
     }
   };
 
+  const handleDragEnd = (updatedBoards: BoardType[]) => {
+    setBoards(updatedBoards);
+  };
+
   useEffect(() => {
     fetchBoards();
   }, []);
@@ -52,7 +56,11 @@ const BoardsPage: React.FC = () => {
   return (
     <div>
       <h1 className="text-3xl font-bold text-center my-4">Boards</h1>
-      <BoardsContainer boards={boards} onDelete={deleteBoard} />
+      <BoardsContainer
+        boards={boards}
+        onDelete={deleteBoard}
+        onDragEnd={handleDragEnd}
+      />
     </div>
   );
 };
