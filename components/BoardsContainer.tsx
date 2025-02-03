@@ -1,7 +1,3 @@
-// isDropDisabled={false}
-// isCombineEnabled={false}
-// ignoreContainerClipping={false} // ✅ Add this
-
 "use client";
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -12,13 +8,16 @@ type BoardsContainerProps = {
   boards: BoardType[];
   onDelete: (id: number) => void;
   onDragEnd: (updatedBoards: BoardType[]) => void;
+  handleBoards: (updatedBoards: BoardType[]) => void;
 };
 
 const BoardsContainer: React.FC<BoardsContainerProps> = ({
   boards,
-  onDelete,
+  handleBoards,
   onDragEnd,
 }) => {
+  // const [boards, setBoards] = useState<BoardType[]>([]);
+
   const handleDragEnd = (result: any) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -34,46 +33,102 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
     }
   };
 
+  const handleUpdate = async (id: string, newName: string) => {
+    console.log("handleUpdate called with:", id, newName);
+
+    try {
+      const response = await fetch("/api/boards/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, newName }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Update the local state with the updated board
+
+        handleBoards(
+          boards.map((board) =>
+            board.id === id ? { ...board, name: data.board.name } : board
+          )
+        );
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to update board name:", errorData.error);
+        // Optionally, handle the error (e.g., show a notification)
+      }
+    } catch (error) {
+      console.error("An error occurred while updating the board:", error);
+      // Optionally, handle the error
+    }
+  };
+
+  const onDelete = async (id: string) => {
+    try {
+      const response = await fetch(`/api/boards/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        handleBoards(boards.filter((board) => board.id !== id));
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete board:", errorData.error);
+        // Optionally, handle the error (e.g., show a notification)
+      }
+    } catch (error) {
+      console.error("An error occurred while deleting the board:", error);
+      // Optionally, handle the error
+    }
+  };
+
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable
-        droppableId="boards"
-        direction="horizontal"
-        isDropDisabled={false}
-        isCombineEnabled={false}
-        ignoreContainerClipping={false}
-      >
-        {(provided) => (
-          <div
-            className="flex flex-wrap justify-start items-start h-screen overflow-y-auto p-4"
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {boards.map((board, index) => (
-              <Draggable
-                key={board.id.toString()}
-                draggableId={board.id.toString()}
-                index={index}
-              >
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <>
-                      <Board board={board} onDelete={onDelete} />
-                      <pre>{JSON.stringify(board.id)}</pre>
-                    </>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <>
+      <div>using this</div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable
+          droppableId="boards"
+          direction="horizontal"
+          isDropDisabled={false}
+          isCombineEnabled={false}
+          ignoreContainerClipping={false}
+        >
+          {(provided) => (
+            <div
+              className="flex flex-wrap justify-start items-start h-screen overflow-y-auto p-4"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {boards.map((board, index) => (
+                <Draggable
+                  key={board.id.toString()}
+                  draggableId={board.id.toString()}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <>
+                        <Board
+                          board={board}
+                          onDelete={onDelete}
+                          onUpdate={handleUpdate}
+                        />
+                        <pre>{JSON.stringify(board.id)}</pre>
+                      </>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </>
   );
 };
 

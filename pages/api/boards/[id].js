@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (req.method === "DELETE") {
     try {
       const board = await prisma.board.delete({
-        where: { id: parseInt(id) },
+        where: { id },
       });
       res.status(200).json(board);
     } catch (error) {

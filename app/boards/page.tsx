@@ -60,6 +60,7 @@ const BoardsPage: React.FC = () => {
         boards={boards}
         onDelete={deleteBoard}
         onDragEnd={handleDragEnd}
+        handleBoards={setBoards}
       />
     </div>
   );

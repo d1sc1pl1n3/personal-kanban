@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BoardType } from "../types/BoardType";
 
 type BoardProps = {
@@ -8,8 +8,14 @@ type BoardProps = {
 };
 
 const Board: React.FC<BoardProps> = ({ board, onDelete, onUpdate }) => {
+  console.log("Board received props:", { onDelete, onUpdate });
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(board.name);
+
+  // Update local state when board.name changes
+  useEffect(() => {
+    setEditedName(board.name);
+  }, [board.name]);
 
   const handleDoubleClick = () => {
     setIsEditing(true);
@@ -21,9 +27,9 @@ const Board: React.FC<BoardProps> = ({ board, onDelete, onUpdate }) => {
 
   const handleBlur = () => {
     if (editedName.trim() && editedName !== board.name) {
-      onUpdate(String(board.id), editedName);
+      onUpdate(board.id, editedName);
     } else {
-      setEditedName(board.name);
+      setEditedName(board.name); // Revert if no change
     }
     setIsEditing(false);
   };
@@ -59,7 +65,7 @@ const Board: React.FC<BoardProps> = ({ board, onDelete, onUpdate }) => {
       )}
       {/* Add other board details here */}
       <button
-        onClick={() => onDelete(String(board.id))}
+        onClick={() => onDelete(board.id)}
         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
         Delete

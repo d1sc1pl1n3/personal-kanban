@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient(); // Creates a new Prisma instance
 
 interface Data {
   message?: string;
@@ -18,7 +18,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  if (req.method === "POST") {
+  if (req.method === "PATCH") {
     const { id, newName } = req.body;
 
     if (!id || !newName) {
@@ -34,10 +34,10 @@ export default async function handler(
       return res.status(200).json({
         message: "Board name updated successfully",
         board: {
-          id: updatedBoard.id.toString(),
+          id: updatedBoard.id,
           name: updatedBoard.name,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          createdAt: updatedBoard.createdAt.toISOString(),
+          updatedAt: updatedBoard.updatedAt.toISOString(),
         },
       });
     } catch (error: any) {
@@ -50,10 +50,10 @@ export default async function handler(
 
       return res.status(500).json({ error: "Internal Server Error" });
     } finally {
-      await prisma.$disconnect();
+      await prisma.$disconnect(); // Disconnect Prisma after each request
     }
   } else {
-    res.setHeader("Allow", ["POST"]);
+    res.setHeader("Allow", ["PATCH"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
