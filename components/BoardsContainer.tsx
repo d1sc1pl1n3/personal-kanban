@@ -63,14 +63,14 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
     }
   };
 
-  const onDelete = async (id: string) => {
+  const onDelete = async (id: number) => {
     try {
       const response = await fetch(`/api/boards/${id}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        handleBoards(boards.filter((board) => board.id !== id));
+        handleBoards(boards.filter((board) => Number(board.id) !== id));
       } else {
         const errorData = await response.json();
         console.error("Failed to delete board:", errorData.error);

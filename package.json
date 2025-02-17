@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.3.0",
+    "@storybook/react": "^8.5.6",
     "@tabler/icons": "^3.29.0",
     "@tabler/icons-react": "^3.29.0",
     "@types/react-beautiful-dnd": "^13.1.8",
