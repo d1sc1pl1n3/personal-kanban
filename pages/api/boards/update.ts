@@ -6,7 +6,7 @@ const prisma = new PrismaClient(); // Creates a new Prisma instance
 interface Data {
   message?: string;
   board?: {
-    id: string;
+    id: number;
     name: string;
     createdAt: string;
     updatedAt: string;

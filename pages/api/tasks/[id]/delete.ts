@@ -1,14 +1,17 @@
 import { PrismaClient } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const prisma = new PrismaClient();
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { id } = req.query;
 
   if (req.method === "DELETE") {
     try {
-      // Assuming task id is numeric. If your task id is a string, remove parseInt.
-      const taskId = parseInt(id, 10);
+      const taskId = parseInt(id as string);
       const deletedTask = await prisma.task.delete({
         where: { id: taskId },
       });

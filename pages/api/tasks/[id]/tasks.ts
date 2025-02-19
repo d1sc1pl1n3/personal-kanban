@@ -1,14 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
-const prisma = new PrismaClient();
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const prisma = new PrismaClient();
 
-export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "GET") {
     try {
       const tasks = await prisma.task.findMany({
-        where: { boardId: parseInt(id) },
+        where: { boardId: parseInt(id as string) },
       });
       res.status(200).json(tasks);
     } catch (error) {
@@ -22,7 +26,7 @@ export default async function handler(req, res) {
         data: {
           title,
           description,
-          boardId: parseInt(id), // Associate the task with the board
+          boardId: parseInt(id as string),
         },
       });
       res.status(201).json(task);

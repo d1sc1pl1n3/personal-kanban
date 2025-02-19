@@ -16,8 +16,6 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
   handleBoards,
   onDragEnd,
 }) => {
-  // const [boards, setBoards] = useState<BoardType[]>([]);
-
   const handleDragEnd = (result: any) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -33,7 +31,7 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
     }
   };
 
-  const handleUpdate = async (id: string, newName: string) => {
+  const handleUpdate = async (id: number, newName: string) => {
     console.log("handleUpdate called with:", id, newName);
 
     try {

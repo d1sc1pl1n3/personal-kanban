@@ -6,7 +6,7 @@ import { TaskType } from "../app/types/TaskType";
 type BoardProps = {
   board: BoardType;
   onDelete: (id: number) => void;
-  onUpdate: (id: string, newName: string) => void;
+  onUpdate: (id: number, newName: string) => void;
 };
 
 const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
@@ -79,7 +79,7 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
     <div className="bg-white shadow-md rounded-lg p-4 m-2 w-64">
       <h2 className="text-xl font-bold mb-2">{board.name}</h2>
       <button
-        onClick={() => onDelete(Number(board.id))}
+        onClick={() => onDelete(board.id)}
         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
         Delete Board
