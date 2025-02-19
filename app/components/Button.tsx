@@ -8,7 +8,7 @@ const Button = ({
   ...props
 }) => {
   const baseClasses =
-    "px-4 py-2 rounded-lg font-semibold transition duration-200";
+    "px-4 py-2 rounded-sm font-semibold transition duration-200";
   const variantClasses = {
     primary: "bg-blue-500 text-white hover:bg-blue-600",
     secondary: "bg-gray-500 text-white hover:bg-gray-600",

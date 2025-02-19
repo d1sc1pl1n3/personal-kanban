@@ -55,8 +55,8 @@ const BoardsPage: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center my-4">Boards</h1>
+    <div className="flex flex-col space-y-2 p-4">
+      <h1 className="title-medium-14 text-center">Boards</h1>
       <BoardsContainer
         boards={boards}
         onDelete={deleteBoard}

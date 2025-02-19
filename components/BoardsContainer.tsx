@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { BoardType } from "../types/BoardType";
 import Board from "./Board";
@@ -16,6 +16,8 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
   handleBoards,
   onDragEnd,
 }) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const handleDragEnd = (result: any) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -44,7 +46,6 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
       if (response.ok) {
         const data = await response.json();
         // Update the local state with the updated board
-
         handleBoards(
           boards.map((board) =>
             board.id === id ? { ...board, name: data.board.name } : board
@@ -53,11 +54,11 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
       } else {
         const errorData = await response.json();
         console.error("Failed to update board name:", errorData.error);
-        // Optionally, handle the error (e.g., show a notification)
+        setErrorMessage("Failed to update board name.");
       }
     } catch (error) {
       console.error("An error occurred while updating the board:", error);
-      // Optionally, handle the error
+      setErrorMessage("An error occurred while updating the board.");
     }
   };
 
@@ -72,16 +73,22 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
       } else {
         const errorData = await response.json();
         console.error("Failed to delete board:", errorData.error);
-        // Optionally, handle the error (e.g., show a notification)
+        setErrorMessage("Failed to delete board.");
       }
     } catch (error) {
       console.error("An error occurred while deleting the board:", error);
-      // Optionally, handle the error
+      setErrorMessage("An error occurred while deleting the board.");
     }
   };
 
   return (
     <>
+      {errorMessage && (
+        <div role="alert" aria-live="assertive">
+          <p>{errorMessage}</p>
+        </div>
+      )}
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable
           droppableId="boards"
@@ -95,6 +102,7 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
               className="flex flex-wrap justify-start items-start h-screen overflow-y-auto p-4"
               ref={provided.innerRef}
               {...provided.droppableProps}
+              aria-live="polite"
             >
               {boards.map((board, index) => (
                 <Draggable
@@ -107,15 +115,15 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
+                      aria-roledescription="draggable item"
+                      aria-label={`Board ${board.name}`}
                     >
-                      <>
-                        <Board
-                          board={board}
-                          onDelete={onDelete}
-                          onUpdate={handleUpdate}
-                        />
-                        <pre>{JSON.stringify(board.id)}</pre>
-                      </>
+                      <Board
+                        board={board}
+                        onDelete={onDelete}
+                        onUpdate={handleUpdate}
+                      />
+                      <span className="sr-only">{board.id}</span>{" "}
                     </div>
                   )}
                 </Draggable>

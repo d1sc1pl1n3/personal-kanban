@@ -14,6 +14,7 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [tasks, setTasks] = useState<TaskType[]>([]);
+  const [error, setError] = useState<string>("");
 
   const fetchTasks = async () => {
     try {
@@ -22,6 +23,7 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
       setTasks(data);
     } catch (error) {
       console.error("Failed to fetch tasks", error);
+      setError("Failed to load tasks.");
     }
   };
 
@@ -50,11 +52,14 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
         setTasks((prevTasks) => [...prevTasks, newTask]);
         setTaskTitle("");
         setTaskDescription("");
+        setError(""); // Clear any previous errors
       } else {
         console.error("Failed to create task");
+        setError("Failed to create task.");
       }
     } catch (error) {
       console.error("An error occurred while creating the task:", error);
+      setError("An error occurred while creating the task.");
     }
   };
 
@@ -70,9 +75,11 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
       } else {
         console.error("Failed to delete task");
+        setError("Failed to delete task.");
       }
     } catch (error) {
       console.error("Error deleting task:", error);
+      setError("Error deleting task.");
     }
   };
 
@@ -81,10 +88,16 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
       <h2 className="title-medium-14 mb-2">{board.name}</h2>
       <Button
         onClick={() => onDelete(board.id)}
-        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded-sm focus:outline-none focus:shadow-outline"
+        aria-label={`Delete board: ${board.name}`}
       >
         Delete Board
       </Button>
+      {error && (
+        <p role="alert" className="text-red-500">
+          {error}
+        </p>
+      )}{" "}
       <form onSubmit={handleAddTask} className="mt-4">
         <div className="mb-2">
           <label className="block title-medium-14 mb-1" htmlFor="taskTitle">
@@ -95,8 +108,9 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
             id="taskTitle"
             value={taskTitle}
             onChange={(e) => setTaskTitle(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 title-medium-14 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded-sm w-full py-2 px-3 title-medium-14 leading-tight focus:outline-none focus:shadow-outline"
             required
+            aria-required="true"
           />
         </div>
         <div className="mb-2">
@@ -110,23 +124,29 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
             id="taskDescription"
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 title-medium-14 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded-sm w-full py-2 px-3 title-medium-14 leading-tight focus:outline-none focus:shadow-outline"
+            aria-required="false"
           />
         </div>
         <Button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-sm focus:outline-none focus:shadow-outline"
         >
           Add Task
         </Button>
       </form>
-      <div className="mt-4">
+      <div className="mt-4" role="list">
         {tasks.map((task) => (
-          <div key={task.id} className="flex items-center justify-between">
+          <div
+            key={task.id}
+            className="flex flex-col items-center justify-between space-y-2"
+            role="listitem"
+          >
             <Task task={task} />
             <Button
               onClick={() => handleDeleteTask(task.id)}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+              className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded-sm focus:outline-none focus:shadow-outline"
+              aria-label={`Delete task: ${task.title}`}
             >
               Delete Task
             </Button>
