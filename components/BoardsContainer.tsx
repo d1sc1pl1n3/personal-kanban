@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { BoardType } from "../types/BoardType";
 import Board from "./Board";
+import { BoardType } from "../types/BoardType";
 
 type BoardsContainerProps = {
   boards: BoardType[];
-  onDelete: (id: number) => void;
+  onDelete?: (id: number) => void; // TODO: remove and from parent
   onDragEnd: (updatedBoards: BoardType[]) => void;
   handleBoards: (updatedBoards: BoardType[]) => void;
 };
@@ -15,21 +15,56 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
   boards,
   handleBoards,
   onDragEnd,
+  // onDelete,
 }) => {
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result) => {
     const { source, destination } = result;
     if (!destination) return;
 
-    // Create a new array to prevent mutating state directly
     const reorderedBoards = [...boards];
     const [movedBoard] = reorderedBoards.splice(source.index, 1);
     reorderedBoards.splice(destination.index, 0, movedBoard);
 
-    // Update state only if order has changed
     if (JSON.stringify(reorderedBoards) !== JSON.stringify(boards)) {
       onDragEnd(reorderedBoards);
+    }
+  };
+
+  const moveItem = (direction) => {
+    if (focusedIndex === null) return;
+    const newIndex = focusedIndex + direction;
+    if (newIndex < 0 || newIndex >= boards.length) return;
+
+    const updatedBoards = [...boards];
+    const [movedBoard] = updatedBoards.splice(focusedIndex, 1);
+    updatedBoards.splice(newIndex, 0, movedBoard);
+
+    handleBoards(updatedBoards);
+    setFocusedIndex(newIndex);
+  };
+
+  const handleKeyDown = (event, index) => {
+    switch (event.key) {
+      case "ArrowLeft":
+      case "ArrowUp":
+        moveItem(-1);
+        event.preventDefault();
+        break;
+      case "ArrowRight":
+      case "ArrowDown":
+        moveItem(1);
+        event.preventDefault();
+        break;
+      case "Enter":
+      case " ":
+        setFocusedIndex(index);
+        event.preventDefault();
+        break;
+      default:
+        break;
     }
   };
 
@@ -110,13 +145,20 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
                   draggableId={board.id.toString()}
                   index={index}
                 >
-                  {(provided) => (
+                  {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       aria-roledescription="draggable item"
                       aria-label={`Board ${board.name}`}
+                      tabIndex={0}
+                      onKeyDown={(event) => handleKeyDown(event, index)}
+                      className={
+                        snapshot.isDragging || index === focusedIndex
+                          ? "border border-blue-500 shadow-lg"
+                          : ""
+                      }
                     >
                       <Board
                         board={board}
