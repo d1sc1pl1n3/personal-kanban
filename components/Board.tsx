@@ -57,6 +57,24 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
     }
   };
 
+  // New handler for deleting a task using the API route
+  const handleDeleteTask = async (taskId: number) => {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}/delete`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Task deleted:", result);
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      } else {
+        console.error("Failed to delete task");
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg p-4 m-2 w-64">
       <h2 className="text-xl font-bold mb-2">{board.name}</h2>
@@ -64,7 +82,7 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
         onClick={() => onDelete(Number(board.id))}
         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
-        Delete
+        Delete Board
       </button>
       <form onSubmit={handleAddTask} className="mt-4">
         <div className="mb-2">
@@ -106,7 +124,15 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
       </form>
       <div className="mt-4">
         {tasks.map((task) => (
-          <Task key={task.id} task={task} />
+          <div key={task.id} className="flex items-center justify-between">
+            <Task task={task} />
+            <button
+              onClick={() => handleDeleteTask(task.id)}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+            >
+              Delete Task
+            </button>
+          </div>
         ))}
       </div>
     </div>

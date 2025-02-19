@@ -84,7 +84,6 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
 
   return (
     <>
-      <div>using this</div>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable
           droppableId="boards"
