@@ -14,8 +14,26 @@
   }
 }
 
+/* TODO: re-add color schemes based on prefers-color-scheme */
+
+* {
+  font-size: 12px !important;
+}
+
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  /* color: var(--foreground); */
+  /* background: var(--background); */
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-size: "12px";
+  line-height: 1.5;
+  font-style: normal;
+}
+
+.title-medium-14 {
+  color: var(--title-color);
+  font-size: "14px";
+  line-height: 1.5;
+  font-weight: 500;
+  font-style: normal;
+  color: "#0E1111";
 }

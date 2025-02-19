@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BoardType } from "../types/BoardType";
 import Task from "./Task";
 import { TaskType } from "../app/types/TaskType";
+import Button from "../app/components/Button";
 
 type BoardProps = {
   board: BoardType;
@@ -77,19 +78,16 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 m-2 w-64">
-      <h2 className="text-xl font-bold mb-2">{board.name}</h2>
-      <button
+      <h2 className="title-medium-14 mb-2">{board.name}</h2>
+      <Button
         onClick={() => onDelete(board.id)}
         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
         Delete Board
-      </button>
+      </Button>
       <form onSubmit={handleAddTask} className="mt-4">
         <div className="mb-2">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-1"
-            htmlFor="taskTitle"
-          >
+          <label className="block title-medium-14 mb-1" htmlFor="taskTitle">
             Task Title
           </label>
           <input
@@ -97,13 +95,13 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
             id="taskTitle"
             value={taskTitle}
             onChange={(e) => setTaskTitle(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 title-medium-14 leading-tight focus:outline-none focus:shadow-outline"
             required
           />
         </div>
         <div className="mb-2">
           <label
-            className="block text-gray-700 text-sm font-bold mb-1"
+            className="block title-medium-14 mb-1"
             htmlFor="taskDescription"
           >
             Task Description
@@ -112,26 +110,26 @@ const Board: React.FC<BoardProps> = ({ board, onDelete }) => {
             id="taskDescription"
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 title-medium-14 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-        <button
+        <Button
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Add Task
-        </button>
+        </Button>
       </form>
       <div className="mt-4">
         {tasks.map((task) => (
           <div key={task.id} className="flex items-center justify-between">
             <Task task={task} />
-            <button
+            <Button
               onClick={() => handleDeleteTask(task.id)}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
             >
               Delete Task
-            </button>
+            </Button>
           </div>
         ))}
       </div>
