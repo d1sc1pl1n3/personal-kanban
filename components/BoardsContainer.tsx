@@ -2,23 +2,10 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Board from "./Board";
-import { BoardType } from "../types/BoardType";
 
-type BoardsContainerProps = {
-  boards: BoardType[];
-  onDelete?: (id: number) => void; // TODO: remove and from parent
-  onDragEnd: (updatedBoards: BoardType[]) => void;
-  handleBoards: (updatedBoards: BoardType[]) => void;
-};
-
-const BoardsContainer: React.FC<BoardsContainerProps> = ({
-  boards,
-  handleBoards,
-  onDragEnd,
-  // onDelete,
-}) => {
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+const BoardsContainer = ({ boards, handleBoards, onDragEnd }) => {
+  const [focusedIndex, setFocusedIndex] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleDragEnd = (result) => {
     const { source, destination } = result;
@@ -35,14 +22,14 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
 
   const moveItem = (direction) => {
     if (focusedIndex === null) return;
-    const newIndex = focusedIndex + direction;
+    const newIndex = Number(focusedIndex) + direction;
     if (newIndex < 0 || newIndex >= boards.length) return;
 
     const updatedBoards = [...boards];
     const [movedBoard] = updatedBoards.splice(focusedIndex, 1);
     updatedBoards.splice(newIndex, 0, movedBoard);
 
-    handleBoards(updatedBoards);
+    onDragEnd(updatedBoards);
     setFocusedIndex(newIndex);
   };
 
@@ -68,9 +55,7 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
     }
   };
 
-  const handleUpdate = async (id: number, newName: string) => {
-    console.log("handleUpdate called with:", id, newName);
-
+  const handleUpdate = async (id, newName) => {
     try {
       const response = await fetch("/api/boards/update", {
         method: "PATCH",
@@ -80,7 +65,6 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
 
       if (response.ok) {
         const data = await response.json();
-        // Update the local state with the updated board
         handleBoards(
           boards.map((board) =>
             board.id === id ? { ...board, name: data.board.name } : board
@@ -88,12 +72,14 @@ const BoardsContainer: React.FC<BoardsContainerProps> = ({
         );
       } else {
         const errorData = await response.json();
-        console.error("Failed to update board name:", errorData.error);
-        setErrorMessage("Failed to update board name.");
+        if (errorData) {
+          setErrorMessage("Failed to update board name.");
+        }
       }
     } catch (error) {
-      console.error("An error occurred while updating the board:", error);
-      setErrorMessage("An error occurred while updating the board.");
+      if (error) {
+        setErrorMessage("An error occurred while updating the board.");
+      }
     }
   };
 

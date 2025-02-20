@@ -26,20 +26,20 @@ const BoardsPage: React.FC = () => {
     }
   };
 
-  const deleteBoard = async (id: number) => {
-    try {
-      const response = await fetch(`/api/boards/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        fetchBoards(false); // Re-fetch boards without showing loading
-      } else {
-        console.error("Failed to delete board");
-      }
-    } catch (error) {
-      console.error("Failed to delete board", error);
-    }
-  };
+  // const deleteBoard = async (id: number) => {
+  //   try {
+  //     const response = await fetch(`/api/boards/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     if (response.ok) {
+  //       fetchBoards(false); // Re-fetch boards without showing loading
+  //     } else {
+  //       console.error("Failed to delete board");
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to delete board", error);
+  //   }
+  // };
 
   const handleDragEnd = (updatedBoards: BoardType[]) => {
     setBoards(updatedBoards);
@@ -59,7 +59,7 @@ const BoardsPage: React.FC = () => {
       <h1 className="title-medium-14 text-center">Boards</h1>
       <BoardsContainer
         boards={boards}
-        onDelete={deleteBoard}
+        // onDelete={deleteBoard}
         onDragEnd={handleDragEnd}
         handleBoards={setBoards}
       />
