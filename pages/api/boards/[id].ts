@@ -1,31 +1,26 @@
-import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-
-const prisma = new PrismaClient();
+import prisma from "../../../app/lib/prisma";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<void> {
-  const { id } = req.query;
+) {
+  if (req.method === "POST") {
+    const { name } = req.body;
+    console.log("name", name);
 
-  if (typeof id !== "string") {
-    res.status(400).json({ message: "Invalid ID" });
-    return;
-  }
-
-  if (req.method === "DELETE") {
     try {
-      const board = await prisma.board.delete({
-        where: { id: parseInt(id) },
+      const board = await prisma.board.create({
+        data: { name },
       });
-      res.status(200).json(board);
+      console.log("board", board);
+      res.status(201).json(board);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Failed to delete board" });
+      console.error("error", error);
+      res.status(500).json({ message: "Failed to create board" });
     }
   } else {
-    res.setHeader("Allow", ["DELETE"]);
+    res.setHeader("Allow", ["POST"]);
     res.status(405).json({ message: `Method ${req.method} not allowed` });
   }
 }

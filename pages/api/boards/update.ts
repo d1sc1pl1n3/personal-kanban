@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient(); // Creates a new Prisma instance
+import prisma from "../../../app/lib/prisma";
 
 interface Data {
   message?: string;
