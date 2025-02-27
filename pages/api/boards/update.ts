@@ -16,6 +16,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  // CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Adjust "*" to your frontend domain for security
+  res.setHeader("Access-Control-Allow-Methods", "PATCH, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method === "PATCH") {
     const { id, newName } = req.body;
 
@@ -25,7 +35,7 @@ export default async function handler(
 
     try {
       const updatedBoard = await prisma.board.update({
-        where: { id },
+        where: { id: Number(id) },
         data: { name: newName },
       });
 
@@ -42,16 +52,13 @@ export default async function handler(
       console.error("Error updating board:", error);
 
       if (error.code === "P2025") {
-        // Prisma error code for record not found
         return res.status(404).json({ error: "Board not found" });
       }
 
       return res.status(500).json({ error: "Internal Server Error" });
-    } finally {
-      await prisma.$disconnect(); // Disconnect Prisma after each request
     }
   } else {
     res.setHeader("Allow", ["PATCH"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).json({ message: `Method ${req.method} not allowed` });
   }
 }
